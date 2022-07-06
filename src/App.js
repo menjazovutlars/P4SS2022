@@ -8,15 +8,19 @@ import { loadGraphModel } from "@tensorflow/tfjs-converter";
 import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as IMAGE_NET_LABELS from "./ImageNetLabels";
 
+
+
+
 import Webcam from "react-webcam";
 import "./App.css";
 // 2. TODO - Import drawing utility here
 // e.g. import { drawRect } from "./utilities";
 import { drawRect } from "./utilities";
 import { norm } from "@tensorflow/tfjs";
+import { db } from "./database";
+
 
 const MODEL_URL = "food_classifier_tfjs/model.json";
-
 
 
 console.log(IMAGE_NET_LABELS);
@@ -63,6 +67,129 @@ function App() {
     */
     return imageTensor
   }
+  
+  
+  
+  
+  const getIngredients = (ingredient) => {
+    
+    console.log(ingredient);
+    console.log(db);
+    const ingredient_ids = []; 
+    for (const item of ingredient) {
+      console.log(item);
+      for (const entry in db.ingredients) {
+        if (db.ingredients[entry].name === item) {
+          const ingredient_id = db.ingredients[entry].id;
+          console.log(
+            "ingredient ID " +
+              ingredient_id +
+              "  ingredient " +
+              db.ingredients[ingredient_id - 1].name
+          );
+            ingredient_ids.push(ingredient_id);
+        }
+      }  
+    }
+     getMeals(ingredient_ids)
+  }
+  
+  const getMeals = (ingredient_id) => {
+    
+      const potentialMeals_id = []
+  
+      for (let i = 0; i < ingredient_id.length; i++ ) {
+        const meal_ids = db.meals_ingredients.filter(
+          (meal) =>
+            Object.values(meal.ingredients_id).includes(ingredient_id[i]) ===
+            true
+        );
+        
+        for (let j = 0; j < meal_ids.length; j++) {
+          if (potentialMeals_id.includes(meal_ids[j].meals_id)) {
+            console.log('adksadlkasd')
+          } else {
+            potentialMeals_id.push(meal_ids[j].meals_id);
+            console.log(
+              "meal ID " +
+                meal_ids[j].meals_id +
+                "  meal " +
+                db.meals[meal_ids[j].meals_id - 1].name
+            );          
+          }   
+        }
+      }
+      
+    console.log(potentialMeals_id);
+    getSteps(potentialMeals_id);
+    getMembers(potentialMeals_id);
+    
+  }
+  
+  const getSteps = (meal_id) => {
+    
+    const steps = [];
+    for (const entry in db.meals_steps) {
+      if (db.meals_steps[entry].meals_id === meal_id) {
+        const step_id = db.meals_steps[entry].steps_id;
+
+        console.log(db.steps[step_id]);
+        
+        
+      }
+    }
+  }
+  
+  
+  const getMembers = (meal_id) => {
+    
+    console.log(meal_id);
+    
+    const members_id = []
+    
+    for (let i = 0; i < meal_id.length; i++) {
+      
+      
+      const member_ids = db.members_meals.filter(
+        (member) =>
+          Object.values(member.meals_id).includes(meal_id[i]) === true
+      );
+      
+      console.log(member_ids);
+      
+      for(let j = 0; j < member_ids.length; j++) {
+        if (members_id.includes(member_ids[j].members_id)) {
+          console.log('huan')
+        } else {
+          members_id.push(member_ids[j].members_id);
+          console.log(
+            "member id " +
+              member_ids[j].members_id +
+              "  name " +
+              db.members[member_ids[j].members_id - 1].name
+          );  
+        }
+      }
+      
+      
+      
+    }
+    
+    /*
+    for (const entry in db.members_meals) {
+      if(db.members_meals[entry].meals_id === meal_id) {
+        const member_id = db.members_meals[entry].members_id;
+        console.log(
+          "member ID " + member_id + "  member " + db.members[member_id - 1].name
+        );
+      }
+    }
+    */
+   
+    console.log(members_id);
+    
+  }
+  
   
   
   
@@ -145,10 +272,14 @@ function App() {
   };
 
   //useEffect(()=>{runCoco()},[runCoco]);
-  useEffect(() => {
+  /*useEffect(() => {
     runMobilenet();
   }, [runMobilenet]);
+*/
 
+useEffect(()=>{
+  getIngredients(['Zwiebel','Karotte']);
+}, [getIngredients]);
   return (
     <div className="App">
       <header className="App-header">

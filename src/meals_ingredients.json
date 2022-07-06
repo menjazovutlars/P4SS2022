@@ -1,0 +1,18 @@
+[
+    {
+        "ingredients_id": [1,2,3,4], 
+        "meals_id": 1
+    },
+    {
+        "ingredients_id": [1,3],
+        "meals_id": 2
+    },
+    {
+        "ingredients_id": [2,3],
+        "meals_id": 3
+    },
+    {
+        "ingredients_id": [1],
+        "meals_id": 4
+    }
+]
