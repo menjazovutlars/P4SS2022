@@ -1,0 +1,26 @@
+<annotation>
+	<folder>onion</folder>
+	<filename>1BWM8F3G0GPA.jpg</filename>
+	<path>F:\GitHub\P4SS2022\Tensorflow\workspace\images\collectedimages\onion\1BWM8F3G0GPA.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>512</width>
+		<height>512</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>Zwiebel</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>173</xmin>
+			<ymin>127</ymin>
+			<xmax>373</xmax>
+			<ymax>432</ymax>
+		</bndbox>
+	</object>
+</annotation>

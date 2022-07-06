@@ -1,0 +1,26 @@
+<annotation>
+	<folder>garlic</folder>
+	<filename>0EGQUN2EV7VB.jpg</filename>
+	<path>F:\GitHub\P4SS2022\Tensorflow\workspace\images\collectedimages\garlic\0EGQUN2EV7VB.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>512</width>
+		<height>512</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>Knoblauch</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>193</xmin>
+			<ymin>119</ymin>
+			<xmax>474</xmax>
+			<ymax>397</ymax>
+		</bndbox>
+	</object>
+</annotation>

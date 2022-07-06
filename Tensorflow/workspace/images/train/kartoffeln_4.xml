@@ -1,0 +1,26 @@
+<annotation>
+	<folder>potato</folder>
+	<filename>kartoffeln_4.jpg</filename>
+	<path>F:\GitHub\P4SS2022\Tensorflow\workspace\images\collectedimages\potato\kartoffeln_4.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>701</width>
+		<height>701</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>Kartoffel</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>102</xmin>
+			<ymin>178</ymin>
+			<xmax>628</xmax>
+			<ymax>537</ymax>
+		</bndbox>
+	</object>
+</annotation>

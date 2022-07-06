@@ -1,0 +1,24 @@
+item { 
+	name:'Zwiebel'
+	id:1
+}
+item { 
+	name:'Ei'
+	id:2
+}
+item { 
+	name:'Knoblauch'
+	id:3
+}
+item { 
+	name:'Salat'
+	id:4
+}
+item { 
+	name:'Karotte'
+	id:5
+}
+item { 
+	name:'Kartoffel'
+	id:6
+}
