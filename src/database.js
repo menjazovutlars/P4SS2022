@@ -52,20 +52,88 @@ export const db = {
 
   ingredients: [
     {
+      available: 0,
       id: 1,
       name: "Zwiebel",
     },
     {
+      available: 1,
       id: 2,
       name: "Knoblauch",
     },
     {
+      available: 0,
       id: 3,
       name: "Kartoffel",
     },
     {
+      available: 1,
       id: 4,
       name: "Karotte",
+    },
+    {
+      available: 0,
+      id: 5,
+      name: "Hühnchen",
+    },
+    {
+      available: 0,
+      id: 6,
+      name: "Zucker",
+    },
+    {
+      available: 1,
+      id: 7,
+      name: "Brokkoli",
+    },
+    {
+      available: 1,
+      id: 8,
+      name: "Steak",
+    },
+    {
+      available: 0,
+      id: 9,
+      name: "Milch",
+    },
+  ],
+
+  ingredients_categories: [
+    {
+      categories_id: [1, 2, 6],
+      ingredients_id: 1,
+    },
+    {
+      categories_id: [1, 2, 6],
+      ingredients_id: 2,
+    },
+    {
+      categories_id: [6],
+      ingredients_id: 3,
+    },
+    {
+      categories_id: [6],
+      ingredients_id: 4,
+    },
+    {
+      categories_id: [4, 5, 11],
+      ingredients_id: 5,
+    },
+    {
+      categories_id: [9],
+      ingredients_id: 6,
+    },
+    {
+      categories_id: [6, 13],
+      ingredients_id: 7,
+    },
+    {
+      categories_id: [4, 11, 12],
+      ingredients_id: 8,
+    },
+    {
+      categories_id: [11, 12],
+      ingredients_id: 9,
     },
   ],
 
@@ -85,6 +153,14 @@ export const db = {
     {
       id: 4,
       name: "Mein Lieblingsessen YUMMY",
+    },
+    {
+      id: 5,
+      name: "Steak mit Pommes",
+    },
+    {
+      id: 6,
+      name: "vegetarischer Gemüseauflauf",
     },
   ],
 
@@ -129,8 +205,16 @@ export const db = {
       steps_id: [2, 3, 4],
     },
     {
-      meals_id: 3,
+      meals_id: 4,
       steps_id: [1, 3, 4],
+    },
+    {
+      meals_id: 5,
+      steps_id: [1, 3, 4, 3],
+    },
+    {
+      meals_id: 6,
+      steps_id: [4, 3, 1],
     },
   ],
 
@@ -196,15 +280,15 @@ export const db = {
 
   needs_categories: [
     {
-      categories_id: [1,6,7],
+      categories_id: [1, 6, 7],
       needs_id: 1,
     },
     {
-      categories_id: [3,8,11,12],
+      categories_id: [3, 8, 11, 12],
       needs_id: 2,
     },
     {
-      categories_id: [4,5,11],
+      categories_id: [4, 5, 11],
       needs_id: 5,
     },
   ],
