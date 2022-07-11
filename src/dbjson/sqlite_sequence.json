@@ -1,0 +1,26 @@
+[
+    {
+        "name": "meals",
+        "seq": 6
+    },
+    {
+        "name": "members",
+        "seq": 4
+    },
+    {
+        "name": "steps",
+        "seq": 4
+    },
+    {
+        "name": "categories",
+        "seq": 17
+    },
+    {
+        "name": "needs",
+        "seq": 6
+    },
+    {
+        "name": "ingredients",
+        "seq": 9
+    }
+]

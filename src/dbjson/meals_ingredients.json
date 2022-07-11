@@ -22,5 +22,29 @@
     {
         "ingredients_id": 3,
         "meals_id": 2
+    },
+    {
+        "ingredients_id": 3,
+        "meals_id": 5
+    },
+    {
+        "ingredients_id": 8,
+        "meals_id": 5
+    },
+    {
+        "ingredients_id": 1,
+        "meals_id": 6
+    },
+    {
+        "ingredients_id": 2,
+        "meals_id": 6
+    },
+    {
+        "ingredients_id": 4,
+        "meals_id": 6
+    },
+    {
+        "ingredients_id": 7,
+        "meals_id": 6
     }
 ]

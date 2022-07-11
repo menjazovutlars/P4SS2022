@@ -14,5 +14,13 @@
     {
         "id": 4,
         "name": "Mein Lieblingsessen YUMMY"
+    },
+    {
+        "id": 5,
+        "name": "Steak mit Pommes"
+    },
+    {
+        "id": 6,
+        "name": "vegetarischer Gemüseauflauf"
     }
 ]

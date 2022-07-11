@@ -1,0 +1,78 @@
+[
+    {
+        "categories_id": 1,
+        "ingredients_id": 1
+    },
+    {
+        "categories_id": 2,
+        "ingredients_id": 1
+    },
+    {
+        "categories_id": 6,
+        "ingredients_id": 1
+    },
+    {
+        "categories_id": 1,
+        "ingredients_id": 2
+    },
+    {
+        "categories_id": 2,
+        "ingredients_id": 2
+    },
+    {
+        "categories_id": 6,
+        "ingredients_id": 2
+    },
+    {
+        "categories_id": 6,
+        "ingredients_id": 3
+    },
+    {
+        "categories_id": 6,
+        "ingredients_id": 4
+    },
+    {
+        "categories_id": 4,
+        "ingredients_id": 5
+    },
+    {
+        "categories_id": 5,
+        "ingredients_id": 5
+    },
+    {
+        "categories_id": 11,
+        "ingredients_id": 5
+    },
+    {
+        "categories_id": 9,
+        "ingredients_id": 6
+    },
+    {
+        "categories_id": 6,
+        "ingredients_id": 7
+    },
+    {
+        "categories_id": 13,
+        "ingredients_id": 7
+    },
+    {
+        "categories_id": 4,
+        "ingredients_id": 8
+    },
+    {
+        "categories_id": 11,
+        "ingredients_id": 8
+    },
+    {
+        "categories_id": 12,
+        "ingredients_id": 8
+    },
+    {
+        "categories_id": 11,
+        "ingredients_id": 9
+    },
+    {
+        "categories_id": 12,
+        "ingredients_id": 9
+    }
+]

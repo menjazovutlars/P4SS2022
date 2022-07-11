@@ -1,0 +1,42 @@
+[
+    {
+        "categories_id": 1,
+        "needs_id": 1
+    },
+    {
+        "categories_id": 6,
+        "needs_id": 1
+    },
+    {
+        "categories_id": 7,
+        "needs_id": 1
+    },
+    {
+        "categories_id": 3,
+        "needs_id": 2
+    },
+    {
+        "categories_id": 8,
+        "needs_id": 2
+    },
+    {
+        "categories_id": 11,
+        "needs_id": 2
+    },
+    {
+        "categories_id": 12,
+        "needs_id": 2
+    },
+    {
+        "categories_id": 4,
+        "needs_id": 5
+    },
+    {
+        "categories_id": 5,
+        "needs_id": 5
+    },
+    {
+        "categories_id": 11,
+        "needs_id": 5
+    }
+]
