@@ -1,228 +1,179 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// Import dependencies
-import React, { useRef, useState, useEffect } from "react";
-import * as tf from "@tensorflow/tfjs";
-// 1. TODO - Import required model here
-import * as cocossd from "@tensorflow-models/coco-ssd";
-import { loadGraphModel } from "@tensorflow/tfjs-converter";
-import * as mobilenet from "@tensorflow-models/mobilenet";
-import * as IMAGE_NET_LABELS from "./ImageNetLabels";
+import "./App.css";
 
+import React, { useRef, useState, useEffect } from "react";
+import {db} from "./database"
+import {drawRect} from './utilities'
 import Webcam from "react-webcam";
 import "./App.css";
-// 2. TODO - Import drawing utility here
-// e.g. import { drawRect } from "./utilities";
-import { drawRect } from "./utilities";
-import { norm } from "@tensorflow/tfjs";
-import { db } from "./database";
-import Meal from "./components/Meal";
+import * as tf from "@tensorflow/tfjs";
 
-const MODEL_URL = "food_classifier_tfjs/model.json";
-const mealCompArray = [];
 
-console.log(IMAGE_NET_LABELS);
+import uuid from 'uuid'
+import RecipeList from "./components/Recipe/RecipeList";
+//import tfnode from "@tensorflow/tfjs-node";
 
 
 
-
-function Gallery(mealArray) {
-  console.log(mealArray.data[0].length, 'data length');
-  console.log(mealArray, 'data')
-  if (mealArray.data.length < 1) {
-    return null
-  } else {
-  return(
-               mealArray.data[0].map((item) => (
-                 <Meal
-                   name={item.name}
-                   categories={item.categories}
-                   ingredients={item.ingredients}
-                   steps={item.steps}
-                   style={{ width: "500px", height: "500px" }}
-                 />
-               ))
-               )
+function Gallery(data) {
+  
+  console.log(data.data.length);
+ 
+  if(data.data.length > 0 ) {
+    for (let i = 0; i < data.data.length; i++) {
+      
+      
+      return data.data.map((item) => (
+        <RecipeList
+          key={uuid.v4()}
+          recipes={item}
+        />
+      ));
+    }
+    } else {
+      
+      return null;
+    }
     
-               }
+     
 }
 
+
 function App() {
+  const [detectedIDsArray, setDetectedIDsArray] = useState([]);
+  const [galeryArray, setGaleryArray] = useState([]);
+  const [showSlide, setShowSlide] = useState(false);
+  const toggleSlideshow = () => {
+    setShowSlide(!showSlide);
+  };
+  
+  
+  
+  const recipeMap = new Map();
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  const [mealsList, updateMealsList] = useState([]);
   
-  
-  let mealComp = {};
-    mealComp.ingredients = [];
-    mealComp.steps = [];
-    mealComp.categories = [];
-
-  
-  
-  
-  
-  
-
-  // Main function
-  /*
-  const runCoco = async () => {
-    // 3. TODO - Load network 
-    // e.g. const net = await cocossd.load();
-    //const net = await cocossd.load();
-    /*const net = await tf.loadGraphModel(
-      "https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/classification/3/default/1",
-      { fromTFHub: true }
-    );
-    
-    console.log(net);
-    //  Loop and detect hands
-    setInterval(() => {
-      detect(net);
-    }, 10);
-  };
-  */
-
-  const convertImage = async (imageData) => {
-    let imageTensor = tf.browser
-      .fromPixels(imageData)
-      .resizeNearestNeighbor([224, 224])
-      .toFloat()
-      .div(tf.scalar(255.0))
-      .expandDims();
-
-    /*
-    console.log(imageTensor);
-    const offset = tf.scalar(255.0);
-    const normalized = tf.scalar(1.0).sub(imageTensor.div(offset));
-        const reshaped = normalized
-          .resizeBilinear([224, 224])
-          
-
-    const batched = reshaped.expandDims(0);
-    //const reshaped = batched.reshape([-1, 224, 224, 3]);
-    console.log(batched);
-    return batched;
-    */
-    return imageTensor;
-  };
-
-  
-
-  const getNeeds = (members) => {
-    
-    
-    //mealComp.possibleMeals = [];
-      
-      
-    let needsIdArray = [];
-    for (const item of members) {
-      for (const entry in db.members_needs) {
-        if (db.members_needs[entry].members_id === item) {
-          const needsId = db.members_needs[entry].needs_id;
-          
-          
-          
-          console.log(
-            "needs ID " + needsId + "  need " + db.needs[needsId - 1].name
-          );
-          
-          needsIdArray.push(needsId);
-        }
-      }
-
-      getCategoriesOfNeeds(needsIdArray);
-      needsIdArray = [];
-    }
-      
-   
-  
-    
-    //getCategoriesOfNeeds(needsIdArray);
-  };
-  
+  const recipeArray = [];
+  const recipe = {};
+ 
   
  
 
-  const getCategoriesOfNeeds = (needs) => {
+   //database 
+   
+  const initRecipeObj = () => {
+    recipe.frames = [];
+    recipe.categories = [];
+    recipe.ingredients = [];
+    recipe.name = "";
+    recipe.steps = [];
+  }
+   
+  const resetRecipeObj = () => {
+    recipe.frames = [];
+    recipe.categories = [];
+    recipe.ingredients = [];
+    recipe.name = "";
+     recipe.steps = [];
+  }
+  
+ 
+  const getFrames = (members) => {
+    initRecipeObj();
     
-    const recipe = new Meal(mealComp);
-    if (mealCompArray.includes(recipe)) {
-    } else {
-      mealCompArray.push(recipe);
+    console.log(members);
+    
+    
+    let framesIdArray = [];
+    for (const item of members) {
+        
+        
+      for (const entry in db.members_frames) {
+        if (db.members_frames[entry].members_id === item) {
+          const framesId = db.members_frames[entry].frames_id;
+
+          recipe.frames.push(db.frames[framesId - 1]);
+          framesIdArray.push(framesId);
+          getCategoriesOfFrames(framesIdArray);
+          ;
+        }
+      }
+
+      if (recipeMap.size > 0) {
+      
+        recipeArray.push(Array.from(recipeMap));
+        setGaleryArray(recipeArray)
+  
+      }
+      
+      resetRecipeObj();
+      recipeMap.clear();
+  
+      framesIdArray = [];
+      
     }
-    updateMealsList([...mealsList, mealComp]);
-    
-    
-    
+  };
+  
+  const getCategoriesOfFrames = (frames) => {
     const categoriesIdArray = [];
-    for (const item of needs) {
-    
-      for (const entry in db.needs_categories) {
-        if (db.needs_categories[entry].needs_id === item) {
-          const categoriesId = db.needs_categories[entry].categories_id;
-          
-          /*console.log(
-            "category ID " +
-              categoriesId +
-              "  need " +
-              db.categories[categoriesId - 1].name
-          );
-          */
+    for (const item of frames) {
+        
+      for (const entry in db.frames_categories) {
+        if (db.frames_categories[entry].frames_id === item) {
+          const categoriesId = db.frames_categories[entry].categories_id;
           categoriesIdArray.push(categoriesId);
-          //getIngredients(categoriesIdArray);
+
         }
       }
     }
-    
+
+
     getIngredients(categoriesIdArray);
   };
   
   
   const getIngredients = (categories) => {
-
-
     const ingredientsIdArray = [];
+   
 
     for (let i = 0; i < categories.length; i++) {
       for (let j = 0; j < categories[i].length; j++) {
-      const ingredients = db.ingredients_categories.filter(
-        (ingredient) =>
-          Object.values(ingredient.categories_id).includes(categories[i][j]) === true
-      );
-      
-      if (mealComp.categories.includes(categories[i][j])) {
+        const ingredients = db.ingredients_categories.filter(
+          (ingredient) =>
+            Object.values(ingredient.categories_id).includes(
+              categories[i][j]
+            ) === true
+        );
         
-      } else {
-        mealComp.categories.push(db.categories[categories[i][j] - 1])
-      }
         
-
-      for (let k = 0; k < ingredients.length; k++) {
-        if (ingredientsIdArray.includes(ingredients[k].ingredients_id)) {
-          
-        } else {
-          ingredientsIdArray.push(ingredients[k].ingredients_id);
-          console.log(
-            "ingredient ID " +
-              ingredients[k].ingredients_id +
-              "  ingredient " +
-              db.ingredients[ingredients[k].ingredients_id - 1].name
-          );
-          mealComp.ingredients.push(
-            db.ingredients[ingredients[k].ingredients_id - 1]
-          );
+        
+        
+        if (db.categories[categories[i][j]] !== undefined) {
+          recipe.categories.push(db.categories[categories[i][j]]);
         }
         
         
+    
+
+        for (let k = 0; k < ingredients.length; k++) {
+          if (ingredientsIdArray.includes(ingredients[k].ingredients_id)) {
+          } else {
+            ingredientsIdArray.push(ingredients[k].ingredients_id);
+            recipe.ingredients.push(
+              db.ingredients[ingredients[k].ingredients_id - 1]
+            );
+
+           
+          }
+        }
       }
     }
-  }
     
+
+
     getMeals(ingredientsIdArray);
   };
   
-  
-
   const getMeals = (ingredients) => {
     const mealsIdArray = [];
 
@@ -231,188 +182,179 @@ function App() {
         (meal) =>
           Object.values(meal.ingredients_id).includes(ingredients[i]) === true
       );
-     
 
       for (let j = 0; j < meals.length; j++) {
-        
-        
-        
         if (mealsIdArray.includes(meals[j].meals_id)) {
-          
         } else {
           mealsIdArray.push(meals[j].meals_id);
           
-          console.log(
-            "meal ID " +
-              meals[j].meals_id +
-              "  meal " +
-              db.meals[meals[j].meals_id - 1].name
-          );
-          mealComp.name = db.meals[meals[j].meals_id - 1].name;
-          getStepsForMeal(mealsIdArray, mealComp);
+          recipe.name = db.meals[meals[j].meals_id - 1].name;
+          
+     
+    
+          
+          getStepsForMeal(mealsIdArray);
         }
       }
-      
     }
-
-  
   };
   
   const getStepsForMeal = (meals) => {
     let stepsIdArray = [];
-    
+    recipe.steps = [];
+
     for (let i = 0; i < meals.length; i++) {
-      const steps = db.meals_steps.filter(
-        (step) => step.meals_id === meals[i]
-  
-      );
-      
+      const steps = db.meals_steps.filter((step) => step.meals_id === meals[i]);
 
       for (let j = 0; j < steps.length; j++) {
         if (stepsIdArray.includes(steps[j].steps_id)) {
         } else {
           stepsIdArray = steps[j].steps_id;
-         
         }
       }
-      
     }
-     printSteps(stepsIdArray);
-
+    
+    printSteps(stepsIdArray);
   };
   
   const printSteps = (steps) => {
-    mealComp.steps = [];
-    steps.forEach(step => {
-      console.log(
-            "step ID " +
-              step +
-              "  step " +
-              db.steps[step -1 ].step
-          );
-          mealComp.steps.push(db.steps[step - 1].step);
-          
+    
+    
+    steps.forEach((step) => {
+       
+      recipe.steps.push(db.steps[step - 1]);
+      
+    });
+  
+    recipeMap.set(recipe.name, {
+      name: recipe.name,
+      frames: recipe.frames,
+      ingredients: recipe.ingredients,
+      steps: recipe.steps,
+      categories: recipe.categories
+      
     })
     
     
-    /*
-    updateMealsList(...mealsList, () => {
-      if(!mealsList.includes(mealComp)) {
-         return mealComp
-      }
-    });
-    */
-      
-    
-    console.log(mealsList);
-    console.log(mealCompArray);
+  };
   
-    //updateMealsList([...mealsList, mealComp])
-    debugger
-    //recipe.setProperties(mealComp);
-    
-    
-  }
+  
+  // Object detection
   
 
-
-  const runMobilenet = async () => {
-    // 3. TODO - Load network
-    // e.g. const net = await cocossd.load();
-    //const net = await cocossd.load();
+   const runCustomModel = async () => {
+    
     const net = await tf.loadGraphModel(
-      "https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/classification/3/default/1",
-      { fromTFHub: true }
+      "https://raw.githubusercontent.com/menjazovutlars/custom-detection-model/main/model/model.json"
     );
-
-    const model = await mobilenet.load({
-      version: 2,
-      alpha: 1.0,
-    });
-    console.log(model);
-    console.log(net);
-    //  Loop and detect hands
+    
     setInterval(() => {
       detect(net);
     }, 1000);
-  };
+   }
+   
+   const detect = async (net) => {
+     // Check data is available
+     if (
+       typeof webcamRef.current !== "undefined" &&
+       webcamRef.current !== null &&
+       webcamRef.current.video.readyState === 4
+     ) {
+       // Get Video Properties
+       const video = webcamRef.current.video;
+       const videoWidth = webcamRef.current.video.videoWidth;
+       const videoHeight = webcamRef.current.video.videoHeight;
 
-  const detect = async (net) => {
-    // Check data is available
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      // Get Video Properties
-      const video = webcamRef.current.video;
-      const videoWidth = webcamRef.current.video.videoWidth;
-      const videoHeight = webcamRef.current.video.videoHeight;
+       // Set video width
+       webcamRef.current.video.width = videoWidth;
+       webcamRef.current.video.height = videoHeight;
 
-      // Set video width
-      webcamRef.current.video.width = videoWidth;
-      webcamRef.current.video.height = videoHeight;
+       // Set canvas height and width
+       canvasRef.current.width = videoWidth;
+       canvasRef.current.height = videoHeight;
 
-      // Set canvas height and width
-      canvasRef.current.width = videoWidth;
-      canvasRef.current.height = videoHeight;
+       // 4. TODO - Make Detections
 
-      // 4. TODO - Make Detections
-      // e.g. const obj = await net.detect(video);
+      
+       
+       const img = tf.browser.fromPixels(video);
+       const resized = tf.image.resizeBilinear(img, [640, 480]);
+       const casted = resized.cast("int32");
+       const expanded = casted.expandDims(0);
+       const obj = await net.executeAsync(expanded);
+       
+   
+       
+       const classes = await obj[1].array();
+       const scores = await obj[2].array();
+       const boxes = await obj[4].array();
+       
 
-      const img = webcamRef.current.getScreenshot();
-      const imageTensor = await convertImage(video);
-      //console.log(img);
-      //console.log(typeof img);
-      const predictions = await net.predict(imageTensor);
+       // Draw mesh
+       
+       const ctx = canvasRef.current.getContext("2d");
+       
+       
+        
+        
+        
+        
+     
 
-      const obj = await net.predict(imageTensor).data();
-      const top5 = Array.from(obj)
-        .map(function (p, i) {
-          return {
-            probability: p,
-            className: IMAGE_NET_LABELS.label[i],
-          };
-        })
-        .sort(function (a, b) {
-          return b.probability - a.probability;
-        })
-        .slice(0, 5);
+       // 5. TODO - Update drawing utility
 
-      //const obj = await net.predict(img).print();
+       requestAnimationFrame(() => {
+         
+         drawRect(
+            boxes[0],
+            classes[0],
+            scores[0],
+            0.98,
+            videoWidth,
+            videoHeight,
+            ctx
+          );
+          
+          
+          
+         const scoreThreshhold = scores[0].filter((score) => score > 0.98);
+         const detectedIds = [];
 
-      console.log();
-      console.log(predictions);
-      console.log(top5);
+         if (scoreThreshhold.length >= 2) {
+           for (let i = 0; i <= scoreThreshhold.length; i++) {
+             if (boxes[0][i] && classes[0][i] && scores[0][i] > 0.98) {
+               detectedIds.push(classes[0][i]);
+             }
+           }
+           getFrames(detectedIds);
+         } else {
+           getFrames(detectedIds);
+         }
 
-      // Draw mesh
-      const ctx = canvasRef.current.getContext("2d");
-
-      // 5. TODO - Update drawing utility
-      // drawSomething(obj, ctx)
-      drawRect(top5, ctx);
-    }
-  };
-
-  //useEffect(()=>{runCoco()},[runCoco]);
-  /*useEffect(() => {
-    runMobilenet();
-  }, [runMobilenet]);
-*/
-  /*
+         setDetectedIDsArray(detectedIds);
+         
+       })
+       
+       
+        tf.dispose(img);
+        tf.dispose(resized);
+        tf.dispose(casted);
+        tf.dispose(expanded);
+        tf.dispose(obj);
+        
+       
+          
+    
+     }
+   };
+  
+   
   useEffect(() => {
-    getIngredients(["Zwiebel", "Karotte"]);
-  }, [getIngredients]);
-  */
+    runCustomModel()
+    //getFrames([1, 2, 3]);
+  },[]);
   
-  
-  useEffect(() => {
-    getNeeds([1,2, 3]);
-  }, [getNeeds]);
-  
-   useEffect(() => {
-     console.log("meals changed", mealsList);
-   }, [mealsList]); 
+
   
   return (
     <div className="App">
@@ -432,7 +374,6 @@ function App() {
             height: 480,
           }}
         />
-
         <canvas
           ref={canvasRef}
           style={{
@@ -451,8 +392,8 @@ function App() {
 
       <div></div>
       <div id="mealContainer" style={{ height: 500 }}>
-      
-      <Gallery data={[mealsList]}></Gallery>
+        <div>Current detected IDs: {detectedIDsArray}</div>
+        <Gallery data={galeryArray}></Gallery>
       </div>
     </div>
   );
