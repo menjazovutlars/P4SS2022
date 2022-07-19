@@ -53,23 +53,7 @@ function Slideshow() {
 
 function App() {
     const [recipes, setRecipes] = useState([
-      {
-        categories: [
-          { name: "hurensohn" },
-          { name: "hurensöhner" },
-          { name: "hurensohnate" },
-        ],
-        ingredients: [
-          { name: "größter" },
-          { name: "fettester" },
-          { name: "almananischer" },
-        ],
-        steps: [
-          { step: "huso aller zeiten" },
-          { step: "huso aller zeiten" },
-          { step: "huso aller zeiten" },
-        ],
-      },
+     
     ]);
     const [categories, setCategories] = useState([]);
     const [ingredients, setIngredients] = useState([]);
@@ -79,6 +63,9 @@ function App() {
     setShowSlide(!showSlide);
   };
   console.log(showSlide);
+  
+  
+  const recipeMap = new Map();
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   
@@ -90,9 +77,12 @@ function App() {
 
    //database 
    
+   
+  
+   
  
   const initRecipeObj = () => {
-    recipe.needs = [];
+    recipe.frames = [];
     recipe.categories = [];
     recipe.ingredients = [];
     recipe.name = "";
@@ -100,7 +90,7 @@ function App() {
   }
    
   const resetRecipeObj = () => {
-    recipe.needs = [];
+    recipe.frames = [];
     recipe.categories = [];
     recipe.ingredients = [];
     recipe.name = "";
@@ -132,41 +122,50 @@ function App() {
     handleAddRecipe();
   })
   
-  const getNeeds = (members) => {
+  const getFrames = (members) => {
     initRecipeObj();
-    let needsIdArray = [];
+    
+    let framesIdArray = [];
     for (const item of members) {
-        resetRecipeObj();
         
-      for (const entry in db.members_needs) {
-        if (db.members_needs[entry].members_id === item) {
-          const needsId = db.members_needs[entry].needs_id;
+        
+      for (const entry in db.members_frames) {
+        if (db.members_frames[entry].members_id === item) {
+          const framesId = db.members_frames[entry].frames_id;
 
           console.log(
-            "needs ID " + needsId + "  need " + db.needs[needsId - 1].name
+            "frames ID " + framesId + "  need " + db.frames[framesId - 1].name
           );
-            recipe.needs.push(db.needs[needsId - 1]);
-          needsIdArray.push(needsId);
-          getCategoriesOfNeeds(needsIdArray);
-          debugger;
+            recipe.frames.push(db.frames[framesId - 1]);
+          framesIdArray.push(framesId);
+          getCategoriesOfFrames(framesIdArray);
+          ;
         }
       }
 
-      //getCategoriesOfNeeds(needsIdArray);
-      needsIdArray = [];
+      //getCategoriesOfframes(framesIdArray);
+      
+      console.log(recipeMap.size);
+      if (recipeMap.size > 0) {
+        recipeArray.push(Object.fromEntries(recipeMap));
+      }
+      recipeMap.clear();
+      resetRecipeObj();
+      
+      framesIdArray = [];
       
       console.log(recipe);
-      
+      console.log(recipeArray)
     }
   };
   
-  const getCategoriesOfNeeds = (needs) => {
+  const getCategoriesOfFrames = (frames) => {
     const categoriesIdArray = [];
-    for (const item of needs) {
+    for (const item of frames) {
         
-      for (const entry in db.needs_categories) {
-        if (db.needs_categories[entry].needs_id === item) {
-          const categoriesId = db.needs_categories[entry].categories_id;
+      for (const entry in db.frames_categories) {
+        if (db.frames_categories[entry].frames_id === item) {
+          const categoriesId = db.frames_categories[entry].categories_id;
 
           /*console.log(
             "category ID " +
@@ -289,12 +288,20 @@ function App() {
     });
     
     console.log(recipe, 'recipe');
-    const newArray = recipeArray.map(recipe => {
-        
+    
+    
+    
+    recipeMap.set(recipe.name, {
+      name: recipe.name,
+      frames: recipe.frames,
+      ingredients: recipe.ingredients,
+      steps: recipe.steps
+      
     })
     
-    recipeArray.push(recipe);
+    console.log(recipeMap);
     
+
 
     
     /*
@@ -305,10 +312,9 @@ function App() {
     */
     console.log(recipes)
     console.log(recipeArray)
-    console.log(newArray)
     
     
-    debugger
+    
     
   };
   
@@ -383,10 +389,10 @@ function App() {
      }
    };
    
-   debugger
+  
   useEffect(() => {
-    getNeeds([1, 2, 3]);
-  },[getNeeds]);
+    getFrames([1, 2, 3]);
+  });
   
 
   

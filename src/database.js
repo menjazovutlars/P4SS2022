@@ -222,36 +222,33 @@ export const db = {
     {
       id: 1,
       name: "Lars",
-      picture_url: "memberImgs/karotte.jpg",
     },
     {
       id: 2,
       name: "Elli",
-      picture_url: "memberImgs/kartoffeln.jpg",
     },
     {
       id: 3,
       name: "Leander",
-      picture_url: "memberImgs/knoblauch.jpg",
     },
   ],
 
-  members_needs: [
+  members_frames: [
     {
       members_id: 1,
-      needs_id: 1,
+      frames_id: 1,
     },
     {
       members_id: 2,
-      needs_id: 1,
+      frames_id: 1,
     },
     {
       members_id: 3,
-      needs_id: 2,
+      frames_id: 2,
     },
   ],
 
-  needs: [
+  frames: [
     {
       id: 1,
       name: "vegan",
@@ -278,18 +275,18 @@ export const db = {
     },
   ],
 
-  needs_categories: [
+  frames_categories: [
     {
       categories_id: [1, 6, 7],
-      needs_id: 1,
+      frames_id: 1,
     },
     {
       categories_id: [3, 8, 11, 12],
-      needs_id: 2,
+      frames_id: 2,
     },
     {
       categories_id: [4, 5, 11],
-      needs_id: 5,
+      frames_id: 5,
     },
   ],
 
