@@ -1,18 +1,19 @@
 import "./App.css";
-import Recipe from "./components/Recipe/Recipe";
+
 import React, { useRef, useState, useEffect } from "react";
 import {db} from "./database"
 import * as util from './utilities'
 import Webcam from "react-webcam";
 import "./App.css";
 import * as tf from "@tensorflow/tfjs";
-import * as cocossd from "@tensorflow-models/coco-ssd";
-import { loadGraphModel } from "@tensorflow/tfjs-converter";
-import * as mobilenet from "@tensorflow-models/mobilenet";
+import {model} from "@tensorflow/tfjs";
+
 import * as IMAGE_NET_LABELS from "./ImageNetLabels";
-import Meal from "./components/Meal";
 import uuid from 'uuid'
 import RecipeList from "./components/Recipe/RecipeList";
+//import tfnode from "@tensorflow/tfjs-node";
+
+
 
 function Gallery(data) {
   console.log(data.data, 'data');
@@ -28,69 +29,25 @@ function Gallery(data) {
         />
       ));
     }
-   
-      
     }
     
      return null;
-  /*
-  return  data.map((item) =>
-      <Recipe
-        name={item.name}
-        categories={item.categories}
-        ingredients={item.ingredients}
-        steps={item.steps}
-      />
-      
-    )
-    
-    */
-    
 }
 
-/*
-function Slideshow() {
-  const [slideCount, setSlideCount] = useState(0);
-  useEffect(() => {
-    let timeout = setTimeout(() => {
-      setSlideCount((slideCount + 1) % data.length);
-    }, 5000);
-    return () => clearTimeout(timeout);
-  });
-  // console.log(slideCount);
-  console.log(data[slideCount]);
-  const x = data[slideCount];
-  return x.type === "pic" ? (
-    <Recipe name={x.id} src={x.src} title={x.title} info={x.info} />
-  ) : (
-    <Quote
-      key={x.id}
-      title={x.title}
-      info={x.info}
-      description={x.description}
-    />
-  );
-}
-*/
 
 function App() {
-    const [recipes, setRecipes] = useState([
-     
-    ]);
+
     const [galeryArray, setGaleryArray] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [ingredients, setIngredients] = useState([]);
-    const [steps, setSteps] = useState([]);
   const [showSlide, setShowSlide] = useState(false);
   const toggleSlideshow = () => {
     setShowSlide(!showSlide);
   };
   
   
+  
   const recipeMap = new Map();
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  
   
   const recipeArray = [];
   const recipe = {};
@@ -278,6 +235,13 @@ function App() {
   
   // Object detection
   
+  
+  const saveModelToLocalStorage = async () => {
+    await localStorage.setItem('model', './model/model.json');
+    
+  }
+
+  
    const convertImage = async (imageData) => {
      let imageTensor = tf.browser
        .fromPixels(imageData)
@@ -289,6 +253,15 @@ function App() {
    };
    
    
+   
+   const runCustomModel = async () => {
+    
+    const net = await tf.loadGraphModel("./model/model.json")
+    
+    setInterval(() => {
+      detect(net);
+    }, 200);
+   }
    
    const detect = async (net) => {
      // Check data is available
@@ -312,13 +285,21 @@ function App() {
 
        // 4. TODO - Make Detections
        // e.g. const obj = await net.detect(video);
-
-       const img = webcamRef.current.getScreenshot();
-       const imageTensor = await convertImage(video);
+       
+       const img = tf.browser.fromPixels(video);
+       const resized = tf.image.resizeBilinear(img, [640, 480]);
+       const casted = resized.cast("int32");
+       const expanded = casted.expandDims(0);
+       const obj = await net.executeAsync(expanded);
+       
+       console.log(obj);
+       
+       //const imageTensor = await convertImage(video);
        //console.log(img);
        //console.log(typeof img);
-       const predictions = await net.predict(imageTensor);
+       //const predictions = await net.predict(imageTensor);
 
+       /*
        const obj = await net.predict(imageTensor).data();
        const top5 = Array.from(obj)
          .map(function (p, i) {
@@ -331,26 +312,30 @@ function App() {
            return b.probability - a.probability;
          })
          .slice(0, 5);
+         
+         */
 
        //const obj = await net.predict(img).print();
 
-       console.log();
-       console.log(predictions);
-       console.log(top5);
+      
 
        // Draw mesh
-       const ctx = canvasRef.current.getContext("2d");
+       //const ctx = canvasRef.current.getContext("2d");
 
        // 5. TODO - Update drawing utility
        // drawSomething(obj, ctx)
-       util.drawRect(top5, ctx);
+       //util.drawRect(top5, ctx);
      }
    };
-   
   
   useEffect(() => {
-    getFrames([1, 2, 3]);
-  });
+    saveModelToLocalStorage()
+  },[])
+   
+  useEffect(() => {
+    runCustomModel()
+    //getFrames([1, 2, 3]);
+  }, );
   
 
   
