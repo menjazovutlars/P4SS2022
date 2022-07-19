@@ -6,9 +6,7 @@ import * as util from './utilities'
 import Webcam from "react-webcam";
 import "./App.css";
 import * as tf from "@tensorflow/tfjs";
-import {model} from "@tensorflow/tfjs";
 
-import * as IMAGE_NET_LABELS from "./ImageNetLabels";
 import uuid from 'uuid'
 import RecipeList from "./components/Recipe/RecipeList";
 //import tfnode from "@tensorflow/tfjs-node";
@@ -235,18 +233,19 @@ function App() {
   
   // Object detection
   
-  
+  /*
   const saveModelToLocalStorage = async () => {
     await localStorage.setItem('model', './model/model.json');
     
   }
+  */
 
   
    const convertImage = async (imageData) => {
      let imageTensor = tf.browser
        .fromPixels(imageData)
        .resizeNearestNeighbor([224, 224])
-       .toFloat()
+       .toInt()
        .div(tf.scalar(255.0))
        .expandDims();
      return imageTensor;
@@ -256,7 +255,9 @@ function App() {
    
    const runCustomModel = async () => {
     
-    const net = await tf.loadGraphModel("./model/model.json")
+    const net = await tf.loadGraphModel(
+      "https://raw.githubusercontent.com/menjazovutlars/custom-detection-model/main/model/model.json"
+    );
     
     setInterval(() => {
       detect(net);
@@ -286,6 +287,8 @@ function App() {
        // 4. TODO - Make Detections
        // e.g. const obj = await net.detect(video);
        
+       //const imageTensor = await convertImage(video);
+       
        const img = tf.browser.fromPixels(video);
        const resized = tf.image.resizeBilinear(img, [640, 480]);
        const casted = resized.cast("int32");
@@ -294,11 +297,11 @@ function App() {
        
        console.log(obj);
        
-       //const imageTensor = await convertImage(video);
+       const imageTensor = await convertImage(video);
        //console.log(img);
        //console.log(typeof img);
-       //const predictions = await net.predict(imageTensor);
-
+       const predictions = await net.predict(imageTensor);
+      console.log(predictions);
        /*
        const obj = await net.predict(imageTensor).data();
        const top5 = Array.from(obj)
@@ -328,9 +331,6 @@ function App() {
      }
    };
   
-  useEffect(() => {
-    saveModelToLocalStorage()
-  },[])
    
   useEffect(() => {
     runCustomModel()
@@ -357,7 +357,6 @@ function App() {
             height: 480,
           }}
         />
-
         <canvas
           ref={canvasRef}
           style={{
@@ -377,7 +376,6 @@ function App() {
       <div></div>
       <div id="mealContainer" style={{ height: 500 }}>
         <Gallery data={galeryArray}></Gallery>
-        
       </div>
       <button onClick={toggleSlideshow}>Change Viewmode</button>
     </div>
