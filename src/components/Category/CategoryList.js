@@ -3,11 +3,9 @@ import Category from './Category'
 import uuid from 'uuid'
 
 export default function CategoryList({ categories }) {
-    console.log(categories)
-    
   return (
     categories.map(category => {
-        return <Category key={uuid.v4()} category={category.categories}></Category>
+        return <Category key={uuid.v4()} category={category.name}></Category>
     })
   )
 }

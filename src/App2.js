@@ -12,9 +12,29 @@ import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as IMAGE_NET_LABELS from "./ImageNetLabels";
 import Meal from "./components/Meal";
 import uuid from 'uuid'
+import RecipeList from "./components/Recipe/RecipeList";
 
 function Gallery(data) {
-  return null /*data.map((item) =>
+  console.log(data.data, 'data');
+  
+  if(data.data.length > 0 ) {
+    for (let i = 0; i < data.data.length; i++) {
+      console.log('data is long enough', data.data);
+      
+      return data.data.map((item) => (
+        <RecipeList
+          key={uuid.v4()}
+          recipes={item}
+        />
+      ));
+    }
+   
+      
+    }
+    
+     return null;
+  /*
+  return  data.map((item) =>
       <Recipe
         name={item.name}
         categories={item.categories}
@@ -23,7 +43,9 @@ function Gallery(data) {
       />
       
     )
+    
     */
+    
 }
 
 /*
@@ -55,6 +77,7 @@ function App() {
     const [recipes, setRecipes] = useState([
      
     ]);
+    const [galeryArray, setGaleryArray] = useState([]);
     const [categories, setCategories] = useState([]);
     const [ingredients, setIngredients] = useState([]);
     const [steps, setSteps] = useState([]);
@@ -62,25 +85,21 @@ function App() {
   const toggleSlideshow = () => {
     setShowSlide(!showSlide);
   };
-  console.log(showSlide);
   
   
   const recipeMap = new Map();
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   
-  const recipe = {};
   
   const recipeArray = [];
+  const recipe = {};
+  
   
  
 
    //database 
    
-   
-  
-   
- 
   const initRecipeObj = () => {
     recipe.frames = [];
     recipe.categories = [];
@@ -97,33 +116,10 @@ function App() {
      recipe.steps = [];
   }
   
-   const handleAddRecipe =  (e) => {
-    const recipesToBeAdded = recipeArray
-    recipesToBeAdded.forEach(r => {
-        if (recipes.includes(r)) {
-          return;
-        }
-        setRecipes((prevRecipes) => {
-          return [
-            ...prevRecipes,
-            {
-              name: r.name,
-              categories: r.categories,
-              ingredients: r.ingredients,
-              steps: r.steps,
-            },
-          ];
-        });
-    })
-    
-  }
-  
-  useEffect(() => {
-    handleAddRecipe();
-  })
-  
+ 
   const getFrames = (members) => {
     initRecipeObj();
+   
     
     let framesIdArray = [];
     for (const item of members) {
@@ -133,29 +129,25 @@ function App() {
         if (db.members_frames[entry].members_id === item) {
           const framesId = db.members_frames[entry].frames_id;
 
-          console.log(
-            "frames ID " + framesId + "  need " + db.frames[framesId - 1].name
-          );
-            recipe.frames.push(db.frames[framesId - 1]);
+          recipe.frames.push(db.frames[framesId - 1]);
           framesIdArray.push(framesId);
           getCategoriesOfFrames(framesIdArray);
           ;
         }
       }
 
-      //getCategoriesOfframes(framesIdArray);
-      
-      console.log(recipeMap.size);
       if (recipeMap.size > 0) {
-        recipeArray.push(Object.fromEntries(recipeMap));
-      }
-      recipeMap.clear();
-      resetRecipeObj();
       
+        recipeArray.push(Array.from(recipeMap));
+        setGaleryArray(recipeArray)
+  
+      }
+      
+      resetRecipeObj();
+      recipeMap.clear();
+  
       framesIdArray = [];
       
-      console.log(recipe);
-      console.log(recipeArray)
     }
   };
   
@@ -166,17 +158,8 @@ function App() {
       for (const entry in db.frames_categories) {
         if (db.frames_categories[entry].frames_id === item) {
           const categoriesId = db.frames_categories[entry].categories_id;
-
-          /*console.log(
-            "category ID " +
-              categoriesId +
-              "  need " +
-              db.categories[categoriesId - 1].name
-          );
-          */
-         
           categoriesIdArray.push(categoriesId);
-          //getIngredients(categoriesIdArray);
+
         }
       }
     }
@@ -199,7 +182,13 @@ function App() {
             ) === true
         );
         
-        recipe.categories.push(db.categories[categories[i][j]]);
+        
+        
+        
+        if (db.categories[categories[i][j]] !== undefined) {
+          recipe.categories.push(db.categories[categories[i][j]]);
+        }
+        
         
     
 
@@ -210,12 +199,7 @@ function App() {
             recipe.ingredients.push(
               db.ingredients[ingredients[k].ingredients_id - 1]
             );
-            console.log(
-              "ingredient ID " +
-                ingredients[k].ingredients_id +
-                "  ingredient " +
-                db.ingredients[ingredients[k].ingredients_id - 1].name
-            );
+
            
           }
         }
@@ -240,13 +224,6 @@ function App() {
         if (mealsIdArray.includes(meals[j].meals_id)) {
         } else {
           mealsIdArray.push(meals[j].meals_id);
-
-          console.log(
-            "meal ID " +
-              meals[j].meals_id +
-              "  meal " +
-              db.meals[meals[j].meals_id - 1].name
-          );
           
           recipe.name = db.meals[meals[j].meals_id - 1].name;
           
@@ -281,42 +258,23 @@ function App() {
     
     
     steps.forEach((step) => {
-      console.log("step ID " + step + "  step " + db.steps[step - 1].step);
-        
+       
       recipe.steps.push(db.steps[step - 1]);
       
     });
-    
-    console.log(recipe, 'recipe');
-    
-    
-    
+  
     recipeMap.set(recipe.name, {
       name: recipe.name,
       frames: recipe.frames,
       ingredients: recipe.ingredients,
-      steps: recipe.steps
+      steps: recipe.steps,
+      categories: recipe.categories
       
     })
     
-    console.log(recipeMap);
-    
-
-
-    
-    /*
-    setRecipes(prevRecipes => {
-        return[...prevRecipes, recipe]
-    })
-    
-    */
-    console.log(recipes)
-    console.log(recipeArray)
-    
-    
-    
     
   };
+  
   
   // Object detection
   
@@ -396,8 +354,6 @@ function App() {
   
 
   
-  console.log(recipes);
-  
   return (
     <div className="App">
       <header className="App-header">
@@ -435,7 +391,7 @@ function App() {
 
       <div></div>
       <div id="mealContainer" style={{ height: 500 }}>
-        <Gallery data={[]}></Gallery>
+        <Gallery data={galeryArray}></Gallery>
         
       </div>
       <button onClick={toggleSlideshow}>Change Viewmode</button>
