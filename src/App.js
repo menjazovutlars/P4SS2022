@@ -53,7 +53,7 @@ function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   
-  const recipeArray = [];
+  
   const recipe = {};
  
   
@@ -80,8 +80,8 @@ function App() {
  
   const getFrames = (members) => {
     initRecipeObj();
-    
-    console.log(members);
+    const recipeArray = [];
+
     
     
     let framesIdArray = [];
@@ -101,16 +101,25 @@ function App() {
 
       if (recipeMap.size > 0) {
       
+        
         recipeArray.push(Array.from(recipeMap));
-        setGaleryArray(recipeArray)
+      
+
+       
   
       }
-      
+      setGaleryArray([...new Set(recipeArray)]);
       resetRecipeObj();
       recipeMap.clear();
-  
+      
       framesIdArray = [];
       
+    }
+    
+   
+    if (members.length === 0) {
+      
+      setGaleryArray([]);
     }
   };
   
