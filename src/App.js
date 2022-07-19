@@ -15,14 +15,52 @@ import "./App.css";
 import { drawRect } from "./utilities";
 import { norm } from "@tensorflow/tfjs";
 import { db } from "./database";
+import Meal from "./components/Meal";
 
 const MODEL_URL = "food_classifier_tfjs/model.json";
+const mealCompArray = [];
 
 console.log(IMAGE_NET_LABELS);
+
+
+
+
+function Gallery(mealArray) {
+  console.log(mealArray.data[0].length, 'data length');
+  console.log(mealArray, 'data')
+  if (mealArray.data.length < 1) {
+    return null
+  } else {
+  return(
+               mealArray.data[0].map((item) => (
+                 <Meal
+                   name={item.name}
+                   categories={item.categories}
+                   ingredients={item.ingredients}
+                   steps={item.steps}
+                   style={{ width: "500px", height: "500px" }}
+                 />
+               ))
+               )
+    
+               }
+}
 
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const [mealsList, updateMealsList] = useState([]);
+  
+  
+  let mealComp = {};
+    mealComp.ingredients = [];
+    mealComp.steps = [];
+    mealComp.categories = [];
+
+  
+  
+  
+  
   
 
   // Main function
@@ -68,16 +106,26 @@ function App() {
     return imageTensor;
   };
 
-  const getNeeds = (members) => {
   
+
+  const getNeeds = (members) => {
+    
+    
+    //mealComp.possibleMeals = [];
+      
+      
     let needsIdArray = [];
     for (const item of members) {
       for (const entry in db.members_needs) {
         if (db.members_needs[entry].members_id === item) {
           const needsId = db.members_needs[entry].needs_id;
+          
+          
+          
           console.log(
             "needs ID " + needsId + "  need " + db.needs[needsId - 1].name
           );
+          
           needsIdArray.push(needsId);
         }
       }
@@ -85,12 +133,27 @@ function App() {
       getCategoriesOfNeeds(needsIdArray);
       needsIdArray = [];
     }
+      
+   
+  
     
     //getCategoriesOfNeeds(needsIdArray);
   };
+  
+  
+ 
 
   const getCategoriesOfNeeds = (needs) => {
-
+    
+    const recipe = new Meal(mealComp);
+    if (mealCompArray.includes(recipe)) {
+    } else {
+      mealCompArray.push(recipe);
+    }
+    updateMealsList([...mealsList, mealComp]);
+    
+    
+    
     const categoriesIdArray = [];
     for (const item of needs) {
     
@@ -105,7 +168,6 @@ function App() {
               db.categories[categoriesId - 1].name
           );
           */
-          
           categoriesIdArray.push(categoriesId);
           //getIngredients(categoriesIdArray);
         }
@@ -114,43 +176,6 @@ function App() {
     
     getIngredients(categoriesIdArray);
   };
-  
-  
-    const getCategoriesOfNeeds2 = (needsIdArray) => {
-      const categoriesIdArray = [];
-
-      for (let i = 0; i < needsIdArray.length; i++) {
-        const categories = db.needs_categories.filter(
-          (category) =>
-            Object.values(category.needs_id).includes(needsIdArray[i]) ===
-            true
-        );
-        
-        console.log(needsIdArray[i]);
-        
-        console.log(categories);
-
-        for (let j = 0; j < categories.length; j++) {
-          if (categoriesIdArray.includes(categories[j].categories_id)) {
-            console.log("adksadlkasd");
-          } else {
-            categoriesIdArray.push(categories[j].categories_id);
-            console.log(
-              "category ID " +
-                categories[j].categories_id +
-                "  meal " +
-                db.categories[categories[j].categories_id - 1].name
-            );
-          }
-        }
-      }
-
-      console.log(categoriesIdArray);
-      
-      //getSteps(potentialMeals_id);
-      //getMembers(potentialMeals_id);
-    };
-
   
   
   const getIngredients = (categories) => {
@@ -164,7 +189,13 @@ function App() {
         (ingredient) =>
           Object.values(ingredient.categories_id).includes(categories[i][j]) === true
       );
-    
+      
+      if (mealComp.categories.includes(categories[i][j])) {
+        
+      } else {
+        mealComp.categories.push(db.categories[categories[i][j] - 1])
+      }
+        
 
       for (let k = 0; k < ingredients.length; k++) {
         if (ingredientsIdArray.includes(ingredients[k].ingredients_id)) {
@@ -177,7 +208,12 @@ function App() {
               "  ingredient " +
               db.ingredients[ingredients[k].ingredients_id - 1].name
           );
+          mealComp.ingredients.push(
+            db.ingredients[ingredients[k].ingredients_id - 1]
+          );
         }
+        
+        
       }
     }
   }
@@ -212,22 +248,19 @@ function App() {
               "  meal " +
               db.meals[meals[j].meals_id - 1].name
           );
-          getStepsForMeal(mealsIdArray);
+          mealComp.name = db.meals[meals[j].meals_id - 1].name;
+          getStepsForMeal(mealsIdArray, mealComp);
         }
       }
       
     }
 
-    
-    //getSteps(potentialMeals_id);
-    //getMembers(potentialMeals_id);
-    
+  
   };
   
   const getStepsForMeal = (meals) => {
     let stepsIdArray = [];
     
-
     for (let i = 0; i < meals.length; i++) {
       const steps = db.meals_steps.filter(
         (step) => step.meals_id === meals[i]
@@ -240,26 +273,16 @@ function App() {
         } else {
           stepsIdArray = steps[j].steps_id;
          
-          
-          /*console.log(
-            "step ID " +
-              steps[j].steps_id +
-              "  step " +
-              db.steps[steps[j].steps_id - 1].step
-          );
-          */
         }
       }
       
     }
      printSteps(stepsIdArray);
 
-    //getSteps(potentialMeals_id);
-    //getMembers(potentialMeals_id);
-    
   };
   
   const printSteps = (steps) => {
+    mealComp.steps = [];
     steps.forEach(step => {
       console.log(
             "step ID " +
@@ -267,52 +290,31 @@ function App() {
               "  step " +
               db.steps[step -1 ].step
           );
+          mealComp.steps.push(db.steps[step - 1].step);
           
     })
+    
+    
+    /*
+    updateMealsList(...mealsList, () => {
+      if(!mealsList.includes(mealComp)) {
+         return mealComp
+      }
+    });
+    */
+      
+    
+    console.log(mealsList);
+    console.log(mealCompArray);
+  
+    //updateMealsList([...mealsList, mealComp])
+    debugger
+    //recipe.setProperties(mealComp);
+    
+    
   }
   
 
-
-  const getMembers = (meal_id) => {
-    console.log(meal_id);
-
-    const members_id = [];
-
-    for (let i = 0; i < meal_id.length; i++) {
-      const member_ids = db.members_meals.filter(
-        (member) => Object.values(member.meals_id).includes(meal_id[i]) === true
-      );
-
-      console.log(member_ids);
-
-      for (let j = 0; j < member_ids.length; j++) {
-        if (members_id.includes(member_ids[j].members_id)) {
-          console.log("huan");
-        } else {
-          members_id.push(member_ids[j].members_id);
-          console.log(
-            "member id " +
-              member_ids[j].members_id +
-              "  name " +
-              db.members[member_ids[j].members_id - 1].name
-          );
-        }
-      }
-    }
-
-    /*
-    for (const entry in db.members_meals) {
-      if(db.members_meals[entry].meals_id === meal_id) {
-        const member_id = db.members_meals[entry].members_id;
-        console.log(
-          "member ID " + member_id + "  member " + db.members[member_id - 1].name
-        );
-      }
-    }
-    */
-
-    console.log(members_id);
-  };
 
   const runMobilenet = async () => {
     // 3. TODO - Load network
@@ -403,9 +405,14 @@ function App() {
   }, [getIngredients]);
   */
   
+  
   useEffect(() => {
     getNeeds([1,2, 3]);
   }, [getNeeds]);
+  
+   useEffect(() => {
+     console.log("meals changed", mealsList);
+   }, [mealsList]); 
   
   return (
     <div className="App">
@@ -441,6 +448,12 @@ function App() {
           }}
         />
       </header>
+
+      <div></div>
+      <div id="mealContainer" style={{ height: 500 }}>
+      
+      <Gallery data={[mealsList]}></Gallery>
+      </div>
     </div>
   );
 }
