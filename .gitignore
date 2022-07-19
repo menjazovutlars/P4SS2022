@@ -105,7 +105,6 @@ dist
 
 # tensorflow files over 100MB
 
-Tensorflow/workspace/annotations/train.record
-tfod/Lib/site-packages/tensorflow-2.9.1-py3.9-win-amd64.egg/tensorflow/python/_pywrap_tensorflow_internal.pyd
-tfod/Lib/site-packages/tensorflow/python/_pywrap_tensorflow_internal.pyd
-tfod/Lib/site-packages
+ffod/Lib/site-packages/tensorflow-2.9.1-py3.9-win-amd64.egg/tensorflow/python/_pywrap_tensorflow_internal.pyd
+ffod/Lib/site-packages/tensorflow/python/_pywrap_tensorflow_internal.pyd
+ffod/Lib/site-packages

@@ -1,0 +1,4 @@
+#!C:\Users\larsb\Documents\GitHub\P4SS2022\ffod\Scripts\python.exe
+# EASY-INSTALL-SCRIPT: 'avro-python3==1.10.2','avro'
+__requires__ = 'avro-python3==1.10.2'
+__import__('pkg_resources').run_script('avro-python3==1.10.2', 'avro')
