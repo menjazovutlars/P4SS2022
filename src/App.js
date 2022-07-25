@@ -1,8 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
+//Tutorial by Nicholas Renotte: https://www.youtube.com/watch?v=uTdUUpfA83s
+
+
 // Import dependencies
 import React, { useRef, useState, useEffect } from "react";
 import * as tf from "@tensorflow/tfjs";
-// 1. TODO - Import required model here
+
 import * as cocossd from "@tensorflow-models/coco-ssd";
 import { loadGraphModel } from "@tensorflow/tfjs-converter";
 import * as mobilenet from "@tensorflow-models/mobilenet";
@@ -10,8 +14,7 @@ import * as IMAGE_NET_LABELS from "./ImageNetLabels";
 
 import Webcam from "react-webcam";
 import "./App.css";
-// 2. TODO - Import drawing utility here
-// e.g. import { drawRect } from "./utilities";
+
 import { drawRect } from "./utilities";
 import { norm } from "@tensorflow/tfjs";
 
@@ -28,16 +31,14 @@ function App() {
   // Main function
   /*
   const runCoco = async () => {
-    // 3. TODO - Load network 
-    // e.g. const net = await cocossd.load();
-    //const net = await cocossd.load();
+   
     /*const net = await tf.loadGraphModel(
       "https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/classification/3/default/1",
       { fromTFHub: true }
     );
     
     console.log(net);
-    //  Loop and detect hands
+    
     setInterval(() => {
       detect(net);
     }, 10);
@@ -48,27 +49,15 @@ function App() {
     
     let imageTensor = tf.browser.fromPixels(imageData).resizeNearestNeighbor([224,224]).toFloat().div(tf.scalar(255.0)).expandDims();
     
-    /*
-    console.log(imageTensor);
-    const offset = tf.scalar(255.0);
-    const normalized = tf.scalar(1.0).sub(imageTensor.div(offset));
-        const reshaped = normalized
-          .resizeBilinear([224, 224])
-          
 
-    const batched = reshaped.expandDims(0);
-    //const reshaped = batched.reshape([-1, 224, 224, 3]);
-    console.log(batched);
-    return batched;
-    */
     return imageTensor
   }
   
   
   
   const runMobilenet = async () => {
-    // 3. TODO - Load network
-    // e.g. const net = await cocossd.load();
+    // Load network
+    // const net = await cocossd.load();
     //const net = await cocossd.load();
     const net = await tf.loadGraphModel(
       "https://tfhub.dev/google/tfjs-model/imagenet/mobilenet_v2_130_224/classification/3/default/1",
@@ -107,13 +96,12 @@ function App() {
       canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
 
-      // 4. TODO - Make Detections
-      // e.g. const obj = await net.detect(video);
+
+      //  const obj = await net.detect(video);
 
       const img = webcamRef.current.getScreenshot();
       const imageTensor = await convertImage(video);
-      //console.log(img);
-      //console.log(typeof img);
+
       const predictions = await net.predict(imageTensor);
       
       const obj = await net.predict(imageTensor).data();
