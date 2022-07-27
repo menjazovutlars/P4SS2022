@@ -322,8 +322,8 @@ function App() {
   };
 
   useEffect(() => {
-    runCustomModel();
-    //getFrames([1, 2, 3]);
+   // runCustomModel();
+    getFrames([1,2,3]);
   }, []);
 
   return (
@@ -362,7 +362,7 @@ function App() {
 
       <div></div>
       <div id="mealContainer" style={{ height: 500 }}>
-        <div>Current detected IDs: {detectedIDsArray}</div>
+        {/* <div>Current detected IDs: {detectedIDsArray}</div> */}
         <Gallery data={galeryArray}></Gallery>
       </div>
     </div>

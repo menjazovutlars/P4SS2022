@@ -25,7 +25,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #155741;
 }
 
 @keyframes App-logo-spin {
@@ -35,4 +35,64 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+h1 {
+  margin-bottom: 0;
+}
+
+h4 {
+  margin-top: 0;
+}
+
+#headline-category {
+  margin-bottom:0;
+}
+
+#mealContainer {
+height: auto !important;
+max-width: 1000px;
+margin: 50px auto;
+overflow: hidden;
+display: flex;
+gap: 30px;
+}
+
+.recipe {
+max-width: 800px;
+margin: 0 auto;
+background: #155741;
+border-top-left-radius: 400px;
+border-top-right-radius: 400px;
+padding: 60px 10px;
+}
+
+.recipe:nth-child(n+4) {
+  display: none;
+}
+
+.recipe:nth-child(odd) {
+  background-color: #ad906e;
+}
+
+.recipe:nth-child(even) {
+  background-color: #437c60;
+}
+
+.recipe:nth-child(3) {
+  background-color: #6f6ead;
+}
+
+.container {
+display: flex;
+}
+
+.preparing {
+text-align: left;
+
+}
+
+#zutaten {
+  padding-right: 30px;
+  text-align: right;
 }
